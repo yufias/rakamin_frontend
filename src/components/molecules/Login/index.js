@@ -1,16 +1,22 @@
 import { useState } from "react";
 import Axios from 'axios';
 import { Auth } from "../../../../services";
-import { Spin } from 'antd';
+import { Spin, Alert } from 'antd';
 import { useRouter } from 'next/router'
 
 const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [message, setMessage] = useState({
+        show: false,
+        message: '',
+        type: null
+    })
     const router = useRouter()
 
-    const submitLogin = () => {
+    const submitLogin = (e) => {
+        e.preventDefault();
         setIsLoading(true);
 
         Axios.post(Auth.signIn, {
@@ -20,10 +26,19 @@ const Login = () => {
         .then(res => {
             const auth_token = res.data.auth_token;
             localStorage.setItem('auth_token', auth_token);
+            setMessage({
+                show: true,
+                message: 'Success login',
+                type: 'success'
+            });
             router.push('/');
         })
         .catch(err => {
-            console.log(err, 'Error');
+            setMessage({
+                show: true,
+                message: 'Invalid email or password',
+                type: 'error'
+            });
         })
         .finally(_ => {
             setIsLoading(false);
@@ -35,7 +50,7 @@ const Login = () => {
             <div className="px-6 h-full text-gray-800">
                 <div className="flex xl:justify-center lg:justify-between justify-center items-center flex-wrap h-full g-6">
                     <div className="xl:ml-20 xl:w-5/12 lg:w-5/12 md:w-8/12 mb-12 md:mb-0">
-                        <form>
+                        <form onSubmit={submitLogin}>
                             <div className="mb-6">
                                 <input
                                     type="text"
@@ -43,6 +58,7 @@ const Login = () => {
                                     placeholder="Email address"
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
+                                    required
                                 />
                             </div>
 
@@ -53,17 +69,18 @@ const Login = () => {
                                     placeholder="Password"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
+                                    required
                                 />
                             </div>
 
                             <div className="text-center lg:text-left">
                                 <button
-                                    type="button"
-                                    onClick={submitLogin}
-                                    className="inline-block px-7 py-3 bg-blue-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
+                                    type="submit"
+                                    className="inline-block px-7 py-3 mb-2 bg-blue-600 text-white font-medium text-sm leading-snug uppercase rounded shadow-md hover:bg-blue-700 hover:shadow-lg focus:bg-blue-700 focus:shadow-lg focus:outline-none focus:ring-0 active:bg-blue-800 active:shadow-lg transition duration-150 ease-in-out"
                                 >
                                     {isLoading ? <Spin /> : 'Login'}
                                 </button>
+                                { message.show ? <Alert message={message.message} type={message.type} showIcon /> : '' }
                                 <p className="text-sm font-semibold mt-2 pt-1 mb-0">
                                     Don't have an account?
                                     <a

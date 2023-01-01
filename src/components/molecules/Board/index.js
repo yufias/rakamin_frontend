@@ -5,15 +5,25 @@ import {
     GroupCard, 
     GroupTitle,
     GroupDescription,
-    ItemContent
- } from './BoardStyle';
-import { Spin, Alert } from 'antd';
+    ItemContent,
+    ItemName,
+    ItemFooter
+} from './BoardStyle';
+import { ActionDropdown, ActionContainer, ActionItem } from '../../../../styles/GlobalStyles';
+import { Spin, Alert, Progress } from 'antd';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faEllipsis, faTrash, faArrowRight, faArrowLeft, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
 import { Todos, getItems } from '../../../../services';
 
 const Board = () => {
     const [todosList, setTodosList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [actionToggle, setActionToggle] = useState(false)
     const [token, setToken] = useState(null)
+
+    const handleActionToggle = () => {
+        setActionToggle(!actionToggle);
+    }
 
     const fetchTodos = async () => {
         setIsLoading(true);
@@ -93,13 +103,44 @@ const Board = () => {
                                 todo.items.map((item, index) => {
                                     return (
                                         <ItemContent key={index}>
-                                            <p>{item.name}</p>
+                                            <ItemName>{item.name}</ItemName>
+                                            <ItemFooter>
+                                                <Progress percent={item.progress_percentage} size="small" />
+                                                <ActionContainer>
+                                                    <FontAwesomeIcon icon={faEllipsis} style={{ color: '#757575', cursor: 'pointer' }} onClick={handleActionToggle} />
+                                                    {actionToggle ? (
+                                                        <ActionDropdown>
+                                                            <ActionItem>
+                                                                <FontAwesomeIcon icon={faArrowRight}/>
+                                                                <span>Move Right</span>
+                                                            </ActionItem>
+                                                            <ActionItem>
+                                                                <FontAwesomeIcon icon={faArrowLeft}/>
+                                                                <span>Move Left</span>
+                                                            </ActionItem>
+                                                            <ActionItem>
+                                                                <FontAwesomeIcon icon={faTrash}/>
+                                                                <span>Delete</span>
+                                                            </ActionItem>
+                                                            <ActionItem>
+                                                                <FontAwesomeIcon icon={faPenToSquare}/>
+                                                                <span>Edit</span>
+                                                            </ActionItem>
+                                                        </ActionDropdown>
+                                                    ) : (
+                                                        <></>
+                                                    )}
+                                                </ActionContainer>
+                                            </ItemFooter>
                                         </ItemContent>
                                     )
                                 })
                             ) : (
-                                ''
+                                <ItemContent>
+                                    <ItemName>No Task</ItemName>
+                                </ItemContent>
                             )}
+
                         </GroupCard>
                     )
                 })}

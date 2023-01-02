@@ -27,7 +27,7 @@ const ActionModal = ({ mode, taskName, taskPrecentage, setTask, setPrecentage, s
             </div>
             <div className="my-2">
                 <label>Progress :</label>
-                <Input placeholder="Task Name" value={taskPrecentage} onChange={(e) => setPrecentage(e.target.value)} />
+                <Input placeholder="Task Name" value={taskPrecentage} onChange={(e) => setPrecentage(e.target.value.replace(/\D/,''))} />
             </div>
         </Modal>
     )

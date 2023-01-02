@@ -16,7 +16,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import Items from '../Items';
 import ActionModal from '../ActionModal';
-import { Todos, getItems, createItems, patchItem } from '../../../../services';
+import { Todos, getItems, createItems, patchItem, deleteItem } from '../../../../services';
 
 const Board = () => {
     const [todosList, setTodosList] = useState([]);
@@ -70,7 +70,7 @@ const Board = () => {
         }
 
         Axios.delete(
-            patchItem(todoId, itemId),
+            deleteItem(todoId, itemId),
             config
         )
         .then(res => {
@@ -130,26 +130,28 @@ const Board = () => {
         }
     }
 
-    const fetchTodos = () => {
+    const fetchTodos = async () => {
         setIsLoading(true);
-        Axios.get(
+        await Axios.get(
             Todos.fetchAll,
             {
                 headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
             }
         )
         .then(res => {
-            res.data.forEach((todo, index) => {
-                fetchItems(todo.id, index, res.data)
+            res.data.forEach(async (todo, index) => {
+                await fetchItems(todo.id, index, res.data)
             })
         })
         .catch(error => {
             console.log(error, 'ERROR')
         })
+        .finally(_ => {
+            setIsLoading(false);
+        }) 
     }
 
     const fetchItems = async (id, index, todoData) => {
-        setIsLoading(true);
         await Axios.get(
             getItems(id),
             {
@@ -160,13 +162,10 @@ const Board = () => {
             const existingList = todoData 
             existingList[index].items = res.data
             setTodosList(existingList)
-            console.log(existingList,'existing')
+            console.log(todosList,'todoList')
         })
         .catch(error => {
             console.log(error, 'ERROR')
-        })
-        .finally(_ => {
-            setIsLoading(false);
         })
     }
 

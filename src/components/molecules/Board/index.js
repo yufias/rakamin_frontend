@@ -190,7 +190,7 @@ const Board = () => {
     if(!token) {
         return (
             <div className="p-20 bg-white flex justify-center">
-                <p>You need to log in first <Link href="/auth" legacyBehavior><a style={{ color: 'blue', textDecoration: 'underline' }}>Here</a></Link></p>
+                <p>You need to log in first <Link href="/login" legacyBehavior><a style={{ color: 'blue', textDecoration: 'underline' }}>Here</a></Link></p>
             </div>
         )
     } 

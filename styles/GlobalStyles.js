@@ -3,7 +3,7 @@ import styled from "styled-components";
 export const ActionContainer = styled.div`
     display: inline-block;
     position: relative;
-
+    z-index: 9999;
 `;
 
 export const ActionDropdown = styled.div`

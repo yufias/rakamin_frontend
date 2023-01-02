@@ -4,44 +4,31 @@ import Link from 'next/link'
 import { 
     GroupCard, 
     GroupTitle,
-    GroupDescription,
-    ItemContent,
-    ItemName,
-    ItemFooter
+    GroupDescription
 } from './BoardStyle';
-import { ActionDropdown, ActionContainer, ActionItem } from '../../../../styles/GlobalStyles';
+import { ActionItem } from '../../../../styles/GlobalStyles';
 import { 
     Spin, 
-    Progress, 
     Modal,
     Input,
     Button
 } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
-    faEllipsis, 
-    faTrash, 
-    faArrowRight, 
-    faArrowLeft, 
-    faPenToSquare, 
     faCirclePlus 
 } from '@fortawesome/free-solid-svg-icons'
+import Items from '../Items';
 import { Todos, getItems, createItems } from '../../../../services';
 
 const Board = () => {
     const [todosList, setTodosList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [actionToggle, setActionToggle] = useState(false);
     const [token, setToken] = useState(null);
     const [editModalToggle, setEditModalToggle] = useState(false);
     const [addModalToggle, setAddModalToggle] = useState(false);
     const [newTask, setNewTask] = useState('');
     const [newPrecentage, setNewPrecentage] = useState('');
     const [activeAddTodoId, setActiveAddTodoId] = useState(null)
-
-    const handleActionToggle = () => {
-        setActionToggle(!actionToggle);
-    }
 
     const handleAddModalToggle = (id) => {
         setActiveAddTodoId(id)
@@ -137,7 +124,7 @@ const Board = () => {
         )
     }
 
-    if(!isLoading && todosList.length >= 1) {
+    if(!isLoading) {
         return (
             <div className="p-20 bg-white flex gap-4 items-start">
                 {todosList.map((todo, todoIndex) => {
@@ -150,52 +137,16 @@ const Board = () => {
                             {todo.items ? (
                                 todo.items.map((item, itemIndex) => {
                                     return (
-                                        <ItemContent key={itemIndex}>
-                                            <ItemName>{item.name}</ItemName>
-                                            <ItemFooter>
-                                                <Progress percent={item.progress_percentage} size="small" />
-                                                <ActionContainer>
-                                                    <FontAwesomeIcon icon={faEllipsis} style={{ color: '#757575', cursor: 'pointer' }} onClick={handleActionToggle} />
-                                                    {actionToggle ? (
-                                                        <ActionDropdown>
-                                                            {todoIndex == todosList.length - 1 ? (
-                                                                <></>
-                                                            ) : (
-                                                                <ActionItem>
-                                                                    <FontAwesomeIcon icon={faArrowRight}/>
-                                                                    <span>Move Right</span>
-                                                                </ActionItem>
-                                                            )}
-
-                                                            {todoIndex == 0 ? (
-                                                                <></>
-                                                            ) : (
-                                                                <ActionItem>
-                                                                    <FontAwesomeIcon icon={faArrowLeft}/>
-                                                                    <span>Move Left</span>
-                                                                </ActionItem>
-                                                            )}
-                                                            <ActionItem>
-                                                                <FontAwesomeIcon icon={faTrash}/>
-                                                                <span>Delete</span>
-                                                            </ActionItem>
-                                                            <ActionItem onClick={() => setEditModalToggle(!editModalToggle)}>
-                                                                <FontAwesomeIcon icon={faPenToSquare}/>
-                                                                <span>Edit</span>
-                                                            </ActionItem>
-                                                        </ActionDropdown>
-                                                    ) : (
-                                                        <></>
-                                                    )}
-                                                </ActionContainer>
-                                            </ItemFooter>
-                                        </ItemContent>
+                                        <Items 
+                                            key={itemIndex} 
+                                            item={item} 
+                                            todoIndex={todoIndex}
+                                            todosList={todosList}
+                                        />
                                     )
                                 })
                             ) : (
-                                <ItemContent>
-                                    <ItemName>No Task</ItemName>
-                                </ItemContent>
+                                <Items />
                             )}
                             <ActionItem onClick={() => handleAddModalToggle(todo.id)}>
                                 <FontAwesomeIcon icon={faCirclePlus}/>

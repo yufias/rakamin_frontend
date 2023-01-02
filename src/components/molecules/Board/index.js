@@ -155,6 +155,16 @@ const Board = () => {
             progress_percentage: taskPrecentage
         }
 
+        if(!taskName || taskName == '') {
+            notificationValidation('Task name cannot be empty');
+            return;
+        }
+
+        if(!taskPrecentage || taskPrecentage == '') {
+            notificationValidation('Task precentage cannot be empty');
+            return;
+        }
+
         const config = {
             headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
         }

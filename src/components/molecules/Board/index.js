@@ -9,6 +9,7 @@ import {
 import { ActionItem } from '../../../../styles/GlobalStyles';
 import { 
     Spin,
+    notification
 } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
@@ -41,6 +42,13 @@ const Board = () => {
         }
     }
 
+    const openNotification = (error) => {
+        notification.error({
+            message: 'Error',
+            description: error.message
+        });
+    };
+
     const moveItem = (currentTodoId, targetTodoId, itemId, itemName) => {
         const editParams = {
             target_todo_id: targetTodoId,
@@ -60,7 +68,7 @@ const Board = () => {
             fetchTodos();
         })
         .catch(error => {
-            console.log(error, 'ERROR')
+            openNotification(error.response)
         })
     }
 
@@ -77,7 +85,7 @@ const Board = () => {
             fetchTodos();
         })
         .catch(error => {
-            console.log(error, 'ERROR')
+            openNotification(error.response)
         })
     }
 
@@ -110,7 +118,7 @@ const Board = () => {
                 setPrecentage('')
             })
             .catch(error => {
-                console.log(error, 'ERROR')
+                openNotification(error.response)
             })
         } else {
             Axios.post(
@@ -125,7 +133,7 @@ const Board = () => {
                 setPrecentage('')
             })
             .catch(error => {
-                console.log(error, 'ERROR')
+                openNotification(error.response)
             })
         }
     }
@@ -144,10 +152,12 @@ const Board = () => {
             })
         })
         .catch(error => {
-            console.log(error, 'ERROR')
+            openNotification(error.response)
         })
         .finally(_ => {
-            setIsLoading(false);
+            setTimeout(() => {
+                setIsLoading(false);
+            }, 400)
         }) 
     }
 
@@ -162,10 +172,9 @@ const Board = () => {
             const existingList = todoData 
             existingList[index].items = res.data
             setTodosList(existingList)
-            console.log(todosList,'todoList')
         })
         .catch(error => {
-            console.log(error, 'ERROR')
+            openNotification(error.response)
         })
     }
 
@@ -181,7 +190,7 @@ const Board = () => {
     if(!token) {
         return (
             <div className="p-20 bg-white flex justify-center">
-                <p>You need to log in first <Link href="/auth">Here</Link></p>
+                <p>You need to log in first <Link href="/auth" legacyBehavior><a style={{ color: 'blue', textDecoration: 'underline' }}>Here</a></Link></p>
             </div>
         )
     } 

@@ -3,9 +3,8 @@ import {
     Input,
     Button
 } from 'antd';
-import { useState } from 'react';
 
-const ActionModal = ({ mode, todoId, taskName, taskPrecentage, setTask, setPrecentage, submitTask, setModalToggle, modalToggle }) => {
+const ActionModal = ({ mode, taskName, taskPrecentage, setTask, setPrecentage, submitTask, setModalToggle, modalToggle }) => {
 
     return (
         <Modal

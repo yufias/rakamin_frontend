@@ -41,6 +41,29 @@ const Board = () => {
         }
     }
 
+    const moveItem = (currentTodoId, targetTodoId, itemId, itemName) => {
+        const editParams = {
+            target_todo_id: targetTodoId,
+            name: itemName,
+        }
+
+        const config = {
+            headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+        }
+
+        Axios.patch(
+            patchItem(currentTodoId, itemId),
+            editParams,
+            config
+        )
+        .then(res => {
+            fetchTodos();
+        })
+        .catch(error => {
+            console.log(error, 'ERROR')
+        })
+    }
+
     const submitTask = () => {
         const params = {
             name: taskName,
@@ -175,6 +198,7 @@ const Board = () => {
                                             todoIndex={todoIndex}
                                             todosList={todosList}
                                             handleActionModalToggle={handleActionModalToggle}
+                                            moveItem={moveItem}
                                         />
                                     )
                                 })

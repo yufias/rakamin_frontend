@@ -18,7 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react';
 
-const Items = ({ item, itemIndex, todoIndex, todosList, handleActionModalToggle }) => {
+const Items = ({ item, todoIndex, todosList, handleActionModalToggle, moveItem }) => {
     const [actionToggle, setActionToggle] = useState(false);
 
     const handleActionToggle = () => {
@@ -29,6 +29,8 @@ const Items = ({ item, itemIndex, todoIndex, todosList, handleActionModalToggle 
         setActionToggle(false);
         handleActionModalToggle(todosList[todoIndex].id, 'edit', item.id, item);
     }
+
+
 
     return (
         <ItemContent>
@@ -43,8 +45,8 @@ const Items = ({ item, itemIndex, todoIndex, todosList, handleActionModalToggle 
                                 {todoIndex == todosList.length - 1 ? (
                                     <></>
                                 ) : (
-                                    <ActionItem>
-                                        <FontAwesomeIcon icon={faArrowRight}/>
+                                    <ActionItem onClick={() => moveItem(todosList[todoIndex].id, todosList[todoIndex+1].id, item.id, item.name)}>
+                                        <FontAwesomeIcon icon={faArrowRight} />
                                         <span>Move Right</span>
                                     </ActionItem>
                                 )}
@@ -52,8 +54,8 @@ const Items = ({ item, itemIndex, todoIndex, todosList, handleActionModalToggle 
                                 {todoIndex == 0 ? (
                                     <></>
                                 ) : (
-                                    <ActionItem>
-                                        <FontAwesomeIcon icon={faArrowLeft}/>
+                                    <ActionItem onClick={() => moveItem(todosList[todoIndex].id, todosList[todoIndex-1].id, item.id, item.name)}>
+                                        <FontAwesomeIcon icon={faArrowLeft} />
                                         <span>Move Left</span>
                                     </ActionItem>
                                 )}

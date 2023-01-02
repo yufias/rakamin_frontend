@@ -4,7 +4,8 @@ import Link from 'next/link'
 import { 
     GroupCard, 
     GroupTitle,
-    GroupDescription
+    GroupDescription,
+    AddGroupButton
 } from './BoardStyle';
 import { ActionItem } from '../../../../styles/GlobalStyles';
 import { 
@@ -17,6 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import Items from '../Items';
 import ActionModal from '../ActionModal';
+import NewGroupModal from '../NewGroupModal';
 import { Todos, getItems, createItems, patchItem, deleteItem } from '../../../../services';
 
 const Board = () => {
@@ -29,6 +31,51 @@ const Board = () => {
     const [activeTodoId, setActiveTodoId] = useState(null);
     const [activeItemId, setActiveItemId] = useState(null);
     const [modalMode, setModalMode] = useState(null);
+    const [groupTitle, setGroupTitle] = useState('');
+    const [groupDescription, setGroupDescription] = useState('');
+    const [modalGroupToggle, setModalGroupToggle] = useState(false);
+
+    const submitNewGroup = () => {
+        const params = {
+            title: groupTitle,
+            description: groupDescription
+        }
+
+        const editParams = {
+            target_todo_id: activeTodoId,
+            name: taskName,
+            progress_percentage: taskPrecentage
+        }
+
+        const config = {
+            headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+        }
+
+        if(!groupTitle || groupTitle == '') {
+            notificationValidation('Group title cannot be empty');
+            return;
+        }
+
+        if(!groupDescription || groupDescription == '') {
+            notificationValidation('Group description cannot be empty');
+            return;
+        }
+
+        Axios.post(
+            Todos.create,
+            params,
+            config
+        )
+        .then(res => {
+            fetchTodos();
+            setModalGroupToggle(false);
+            setGroupTitle('')
+            setGroupDescription('')
+        })
+        .catch(error => {
+            openNotification(error.response)
+        })
+    }
 
     const handleActionModalToggle = (id, mode, itemId, editValue) => {
         setActiveTodoId(id)
@@ -46,6 +93,13 @@ const Board = () => {
         notification.error({
             message: 'Error',
             description: error.message
+        });
+    };
+
+    const notificationValidation = (error) => {
+        notification.error({
+            message: 'Error',
+            description: error
         });
     };
 
@@ -203,54 +257,72 @@ const Board = () => {
         )
     }
 
-    if(!isLoading) {
-        return (
-            <div className="p-20 bg-white flex gap-4 items-start">
-                {todosList.map((todo, todoIndex) => {
-                    return (
-                        <GroupCard key={ todoIndex }>
-                            <GroupTitle>
-                                { todo.title }
-                            </GroupTitle>
-                            <GroupDescription>{ todo.description }</GroupDescription>
-                            {todo.items ? (
-                                todo.items.map((item, itemIndex) => {
-                                    return (
-                                        <Items 
-                                            key={itemIndex} 
-                                            item={item} 
-                                            itemIndex={itemIndex}
-                                            todoIndex={todoIndex}
-                                            todosList={todosList}
-                                            handleActionModalToggle={handleActionModalToggle}
-                                            moveItem={moveItem}
-                                            deleteItem={deleteItem}
-                                        />
-                                    )
-                                })
-                            ) : (
-                                <Items item={[]} />
-                            )}
-                            <ActionItem onClick={() => handleActionModalToggle(todo.id, 'add')}>
-                                <FontAwesomeIcon icon={faCirclePlus}/>
-                                <span>New Task</span>
-                            </ActionItem>
-                        </GroupCard>
-                    )
-                })}
 
-                <ActionModal
-                    mode={modalMode}
-                    todoId={activeTodoId}
-                    taskName={taskName}
-                    taskPrecentage={taskPrecentage}
-                    setTask={setTask}
-                    setPrecentage={setPrecentage}
-                    submitTask={submitTask}
-                    modalToggle={modalToggle}
-                    setModalToggle={setModalToggle}
-                />
-            </div>
+    if(!isLoading && todosList) {
+        return (
+            <>
+                <div className='mt-20 mx-2'>
+                    <AddGroupButton onClick={() => setModalGroupToggle(!modalGroupToggle)}>
+                        + Add New Group
+                    </AddGroupButton>
+                </div>
+                <div className="p-16 bg-white flex gap-4 items-start">
+                    {todosList.map((todo, todoIndex) => {
+                        return (
+                            <GroupCard key={ todoIndex }>
+                                <GroupTitle>
+                                    { todo.title }
+                                </GroupTitle>
+                                <GroupDescription>{ todo.description }</GroupDescription>
+                                {todo.items ? (
+                                    todo.items.map((item, itemIndex) => {
+                                        return (
+                                            <Items 
+                                                key={itemIndex} 
+                                                item={item} 
+                                                itemIndex={itemIndex}
+                                                todoIndex={todoIndex}
+                                                todosList={todosList}
+                                                handleActionModalToggle={handleActionModalToggle}
+                                                moveItem={moveItem}
+                                                deleteItem={deleteItem}
+                                            />
+                                        )
+                                    })
+                                ) : (
+                                    <Items item={[]} />
+                                )}
+                                <ActionItem onClick={() => handleActionModalToggle(todo.id, 'add')}>
+                                    <FontAwesomeIcon icon={faCirclePlus}/>
+                                    <span>New Task</span>
+                                </ActionItem>
+                            </GroupCard>
+                        )
+                    })}
+
+                    <ActionModal
+                        mode={modalMode}
+                        todoId={activeTodoId}
+                        taskName={taskName}
+                        taskPrecentage={taskPrecentage}
+                        setTask={setTask}
+                        setPrecentage={setPrecentage}
+                        submitTask={submitTask}
+                        modalToggle={modalToggle}
+                        setModalToggle={setModalToggle}
+                    />
+
+                    <NewGroupModal 
+                        submitNewGroup={submitNewGroup}
+                        groupTitle={groupTitle}
+                        groupDescription={groupDescription}
+                        setGroupTitle={setGroupTitle}
+                        setGroupDescription={setGroupDescription}
+                        setModalGroupToggle={setModalGroupToggle}
+                        modalGroupToggle={modalGroupToggle}
+                    />
+                </div>
+            </>
         )
     }
 

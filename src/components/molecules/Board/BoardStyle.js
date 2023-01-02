@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { Card } from "antd";
+import { Card, Button } from "antd";
 
 export const GroupCard = styled(Card)`
     width: 300px;
@@ -21,4 +21,21 @@ export const GroupDescription = styled.p`
     font-weight: bold;
     line-height: 20px;
     margin-top: 8px;
+`;
+
+
+export const AddGroupButton = styled(Button)`
+    background-color: #01959F;
+    margin-left: 8px;
+    color: #fff;
+    &:hover {
+        background-color: #01849F
+        color: #fff;
+    }
+
+    &:focus {
+        background-color: #01849F
+        color: #fff;
+        border: none;
+    }
 `;

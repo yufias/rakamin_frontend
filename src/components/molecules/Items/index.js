@@ -18,7 +18,7 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react';
 
-const Items = ({ item, todoIndex, todosList, handleActionModalToggle, moveItem }) => {
+const Items = ({ item, todoIndex, todosList, handleActionModalToggle, moveItem, deleteItem }) => {
     const [actionToggle, setActionToggle] = useState(false);
 
     const handleActionToggle = () => {
@@ -59,7 +59,7 @@ const Items = ({ item, todoIndex, todosList, handleActionModalToggle, moveItem }
                                         <span>Move Left</span>
                                     </ActionItem>
                                 )}
-                                <ActionItem>
+                                <ActionItem onClick={() => deleteItem(todosList[todoIndex].id, item.id)}>
                                     <FontAwesomeIcon icon={faTrash}/>
                                     <span>Delete</span>
                                 </ActionItem>

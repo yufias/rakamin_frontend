@@ -64,6 +64,23 @@ const Board = () => {
         })
     }
 
+    const deleteItem = (todoId, itemId) => {
+        const config = {
+            headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+        }
+
+        Axios.delete(
+            patchItem(todoId, itemId),
+            config
+        )
+        .then(res => {
+            fetchTodos();
+        })
+        .catch(error => {
+            console.log(error, 'ERROR')
+        })
+    }
+
     const submitTask = () => {
         const params = {
             name: taskName,
@@ -199,6 +216,7 @@ const Board = () => {
                                             todosList={todosList}
                                             handleActionModalToggle={handleActionModalToggle}
                                             moveItem={moveItem}
+                                            deleteItem={deleteItem}
                                         />
                                     )
                                 })

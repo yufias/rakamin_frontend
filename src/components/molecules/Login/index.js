@@ -83,7 +83,7 @@ const Login = () => {
                                 </button>
                                 { message.show ? <Alert message={message.message} type={message.type} showIcon /> : '' }
                                 <p className="text-sm font-semibold mt-2 pt-1 mb-0">
-                                    Don't have an account?
+                                    Dont have an account?
                                     <Link href="/register" legacyBehavior>
                                         <a
                                             className="text-red-600 hover:text-red-700 focus:text-red-700 transition duration-200 ease-in-out"

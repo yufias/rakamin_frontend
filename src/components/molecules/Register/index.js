@@ -59,6 +59,7 @@ const Register = () => {
                             <div className="mb-6">
                                 <input
                                     type="text"
+                                    id="name"
                                     className="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                                     placeholder="Name"
                                     value={name}
@@ -70,6 +71,7 @@ const Register = () => {
                             <div className="mb-6">
                                 <input
                                     type="text"
+                                    id="email_address"
                                     className="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                                     placeholder="Email address"
                                     value={email}
@@ -81,6 +83,7 @@ const Register = () => {
                             <div className="mb-6">
                                 <input
                                     type="password"
+                                    id="password"
                                     className="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                                     placeholder="Password"
                                     value={password}
@@ -92,6 +95,7 @@ const Register = () => {
                             <div className="mb-6">
                                 <input
                                     type="password"
+                                    id="confirm_password"
                                     className="form-control block w-full px-4 py-2 text-xl font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
                                     placeholder="Confirm Password"
                                     value={confirmPassword}

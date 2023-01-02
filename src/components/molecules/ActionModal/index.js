@@ -16,18 +16,18 @@ const ActionModal = ({ mode, taskName, taskPrecentage, setTask, setPrecentage, s
                 <Button key="back" onClick={() => setModalToggle(false)}>
                     Cancel
                 </Button>,
-                <Button key="submit" onClick={submitTask}>
+                <Button key="submit" id="submit_action_modal" onClick={submitTask}>
                     Save Task
                 </Button>
                 ]}
         >
             <div className="my-2">
                 <label>Task Name :</label>
-                <Input placeholder="Task Name" value={taskName} onChange={(e) => setTask(e.target.value)} />
+                <Input placeholder="Task Name" name="task_name" value={taskName} onChange={(e) => setTask(e.target.value)} />
             </div>
             <div className="my-2">
                 <label>Progress :</label>
-                <Input placeholder="Task Precentage" value={taskPrecentage} onChange={(e) => setPrecentage(e.target.value.replace(/\D/,''))} />
+                <Input placeholder="Task Precentage" id="task_precentage" value={taskPrecentage} onChange={(e) => setPrecentage(e.target.value.replace(/\D/,''))} />
             </div>
         </Modal>
     )

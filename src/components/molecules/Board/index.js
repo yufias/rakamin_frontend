@@ -302,7 +302,7 @@ const Board = () => {
                                 ) : (
                                     <Items item={[]} />
                                 )}
-                                <ActionItem onClick={() => handleActionModalToggle(todo.id, 'add')}>
+                                <ActionItem id="add_new_task" onClick={() => handleActionModalToggle(todo.id, 'add')}>
                                     <FontAwesomeIcon icon={faCirclePlus}/>
                                     <span>New Task</span>
                                 </ActionItem>

@@ -10,24 +10,71 @@ import {
     ItemFooter
 } from './BoardStyle';
 import { ActionDropdown, ActionContainer, ActionItem } from '../../../../styles/GlobalStyles';
-import { Spin, Alert, Progress } from 'antd';
+import { 
+    Spin, 
+    Progress, 
+    Modal,
+    Input,
+    Button
+} from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEllipsis, faTrash, faArrowRight, faArrowLeft, faPenToSquare } from '@fortawesome/free-solid-svg-icons'
-import { Todos, getItems } from '../../../../services';
+import { 
+    faEllipsis, 
+    faTrash, 
+    faArrowRight, 
+    faArrowLeft, 
+    faPenToSquare, 
+    faCirclePlus 
+} from '@fortawesome/free-solid-svg-icons'
+import { Todos, getItems, createItems } from '../../../../services';
 
 const Board = () => {
     const [todosList, setTodosList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
-    const [actionToggle, setActionToggle] = useState(false)
-    const [token, setToken] = useState(null)
+    const [actionToggle, setActionToggle] = useState(false);
+    const [token, setToken] = useState(null);
+    const [editModalToggle, setEditModalToggle] = useState(false);
+    const [addModalToggle, setAddModalToggle] = useState(false);
+    const [newTask, setNewTask] = useState('');
+    const [newPrecentage, setNewPrecentage] = useState('');
+    const [activeAddTodoId, setActiveAddTodoId] = useState(null)
 
     const handleActionToggle = () => {
         setActionToggle(!actionToggle);
     }
 
-    const fetchTodos = async () => {
+    const handleAddModalToggle = (id) => {
+        setActiveAddTodoId(id)
+        setAddModalToggle(!addModalToggle)
+    }
+
+    const addNewTask = () => {
+        const params = {
+            name: newTask,
+            progress_percentage: newPrecentage
+        }
+
+        const config = {
+            headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
+        }
+
+        Axios.post(
+            createItems(activeAddTodoId),
+            params,
+            config
+        )
+        .then(res => {
+            fetchTodos();
+            setAddModalToggle(false);
+        })
+        .catch(error => {
+            console.log(error, 'ERROR')
+        })
+    }
+
+    const fetchTodos = () => {
         setIsLoading(true);
-        await Axios.get(
+        Axios.get(
             Todos.fetchAll,
             {
                 headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
@@ -55,6 +102,7 @@ const Board = () => {
             const existingList = todoData 
             existingList[index].items = res.data
             setTodosList(existingList)
+            console.log(existingList,'existing')
         })
         .catch(error => {
             console.log(error, 'ERROR')
@@ -92,17 +140,17 @@ const Board = () => {
     if(!isLoading && todosList.length >= 1) {
         return (
             <div className="p-20 bg-white flex gap-4 items-start">
-                {todosList.map((todo, index) => {
+                {todosList.map((todo, todoIndex) => {
                     return (
-                        <GroupCard key={ index }>
+                        <GroupCard key={ todoIndex }>
                             <GroupTitle>
                                 { todo.title }
                             </GroupTitle>
                             <GroupDescription>{ todo.description }</GroupDescription>
                             {todo.items ? (
-                                todo.items.map((item, index) => {
+                                todo.items.map((item, itemIndex) => {
                                     return (
-                                        <ItemContent key={index}>
+                                        <ItemContent key={itemIndex}>
                                             <ItemName>{item.name}</ItemName>
                                             <ItemFooter>
                                                 <Progress percent={item.progress_percentage} size="small" />
@@ -110,19 +158,28 @@ const Board = () => {
                                                     <FontAwesomeIcon icon={faEllipsis} style={{ color: '#757575', cursor: 'pointer' }} onClick={handleActionToggle} />
                                                     {actionToggle ? (
                                                         <ActionDropdown>
-                                                            <ActionItem>
-                                                                <FontAwesomeIcon icon={faArrowRight}/>
-                                                                <span>Move Right</span>
-                                                            </ActionItem>
-                                                            <ActionItem>
-                                                                <FontAwesomeIcon icon={faArrowLeft}/>
-                                                                <span>Move Left</span>
-                                                            </ActionItem>
+                                                            {todoIndex == todosList.length - 1 ? (
+                                                                <></>
+                                                            ) : (
+                                                                <ActionItem>
+                                                                    <FontAwesomeIcon icon={faArrowRight}/>
+                                                                    <span>Move Right</span>
+                                                                </ActionItem>
+                                                            )}
+
+                                                            {todoIndex == 0 ? (
+                                                                <></>
+                                                            ) : (
+                                                                <ActionItem>
+                                                                    <FontAwesomeIcon icon={faArrowLeft}/>
+                                                                    <span>Move Left</span>
+                                                                </ActionItem>
+                                                            )}
                                                             <ActionItem>
                                                                 <FontAwesomeIcon icon={faTrash}/>
                                                                 <span>Delete</span>
                                                             </ActionItem>
-                                                            <ActionItem>
+                                                            <ActionItem onClick={() => setEditModalToggle(!editModalToggle)}>
                                                                 <FontAwesomeIcon icon={faPenToSquare}/>
                                                                 <span>Edit</span>
                                                             </ActionItem>
@@ -140,10 +197,37 @@ const Board = () => {
                                     <ItemName>No Task</ItemName>
                                 </ItemContent>
                             )}
-
+                            <ActionItem onClick={() => handleAddModalToggle(todo.id)}>
+                                <FontAwesomeIcon icon={faCirclePlus}/>
+                                <span>New Task</span>
+                            </ActionItem>
                         </GroupCard>
                     )
                 })}
+
+                <Modal
+                    title="Create Task"
+                    centered
+                    open={addModalToggle}
+                    onCancel={() => setAddModalToggle(false)}
+                    footer={[
+                        <Button key="back" onClick={() => setAddModalToggle(false)}>
+                          Cancel
+                        </Button>,
+                        <Button key="submit" loading={isLoading} onClick={addNewTask}>
+                          Save Task
+                        </Button>
+                      ]}
+                >
+                    <div className="my-2">
+                        <label>Task Name :</label>
+                        <Input placeholder="Task Name" value={newTask} onChange={(e) => setNewTask(e.target.value)} />
+                    </div>
+                    <div className="my-2">
+                        <label>Progress :</label>
+                        <Input placeholder="Task Name" value={newPrecentage} onChange={(e) => setNewPrecentage(e.target.value)} />
+                    </div>
+                </Modal>
             </div>
         )
     }

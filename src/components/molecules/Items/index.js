@@ -18,16 +18,22 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 import { useState } from 'react';
 
-const Items = ({ item, todoIndex, todosList }) => {
+const Items = ({ item, itemIndex, todoIndex, todosList, handleActionModalToggle }) => {
     const [actionToggle, setActionToggle] = useState(false);
 
     const handleActionToggle = () => {
         setActionToggle(!actionToggle);
     }
+
+    const handleEditModalToggle = () => {
+        setActionToggle(false);
+        handleActionModalToggle(todosList[todoIndex].id, 'edit', item.id, item);
+    }
+
     return (
         <ItemContent>
             <ItemName>{item.name}</ItemName>
-            { item !== undefined ? (
+            { item ? (
                 <ItemFooter>
                     <Progress percent={item.progress_percentage} size="small" />
                     <ActionContainer>
@@ -55,7 +61,7 @@ const Items = ({ item, todoIndex, todosList }) => {
                                     <FontAwesomeIcon icon={faTrash}/>
                                     <span>Delete</span>
                                 </ActionItem>
-                                <ActionItem onClick={() => setEditModalToggle(!editModalToggle)}>
+                                <ActionItem onClick={handleEditModalToggle}>
                                     <FontAwesomeIcon icon={faPenToSquare}/>
                                     <span>Edit</span>
                                 </ActionItem>

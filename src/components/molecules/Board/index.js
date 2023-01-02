@@ -8,55 +8,86 @@ import {
 } from './BoardStyle';
 import { ActionItem } from '../../../../styles/GlobalStyles';
 import { 
-    Spin, 
-    Modal,
-    Input,
-    Button
+    Spin,
 } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { 
     faCirclePlus 
 } from '@fortawesome/free-solid-svg-icons'
 import Items from '../Items';
-import { Todos, getItems, createItems } from '../../../../services';
+import ActionModal from '../ActionModal';
+import { Todos, getItems, createItems, patchItem } from '../../../../services';
 
 const Board = () => {
     const [todosList, setTodosList] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [token, setToken] = useState(null);
-    const [editModalToggle, setEditModalToggle] = useState(false);
-    const [addModalToggle, setAddModalToggle] = useState(false);
-    const [newTask, setNewTask] = useState('');
-    const [newPrecentage, setNewPrecentage] = useState('');
-    const [activeAddTodoId, setActiveAddTodoId] = useState(null)
+    const [modalToggle, setModalToggle] = useState(false);
+    const [taskName, setTask] = useState('');
+    const [taskPrecentage, setPrecentage] = useState('');
+    const [activeTodoId, setActiveTodoId] = useState(null);
+    const [activeItemId, setActiveItemId] = useState(null);
+    const [modalMode, setModalMode] = useState(null);
 
-    const handleAddModalToggle = (id) => {
-        setActiveAddTodoId(id)
-        setAddModalToggle(!addModalToggle)
+    const handleActionModalToggle = (id, mode, itemId, editValue) => {
+        setActiveTodoId(id)
+        setModalMode(mode)
+        setModalToggle(!modalToggle)
+
+        if(mode == 'edit'){
+            setTask(editValue.name);
+            setPrecentage(editValue.progress_percentage);
+            setActiveItemId(itemId);
+        }
     }
 
-    const addNewTask = () => {
+    const submitTask = () => {
         const params = {
-            name: newTask,
-            progress_percentage: newPrecentage
+            name: taskName,
+            progress_percentage: taskPrecentage
+        }
+
+        const editParams = {
+            target_todo_id: activeTodoId,
+            name: taskName,
+            progress_percentage: taskPrecentage
         }
 
         const config = {
             headers: { Authorization: `Bearer ${localStorage.getItem('auth_token')}` }
         }
 
-        Axios.post(
-            createItems(activeAddTodoId),
-            params,
-            config
-        )
-        .then(res => {
-            fetchTodos();
-            setAddModalToggle(false);
-        })
-        .catch(error => {
-            console.log(error, 'ERROR')
-        })
+        if(modalMode == 'edit') {
+            Axios.patch(
+                patchItem(activeTodoId, activeItemId),
+                editParams,
+                config
+            )
+            .then(res => {
+                fetchTodos();
+                setModalToggle(false);
+                setTask('')
+                setPrecentage('')
+            })
+            .catch(error => {
+                console.log(error, 'ERROR')
+            })
+        } else {
+            Axios.post(
+                createItems(activeTodoId),
+                params,
+                config
+            )
+            .then(res => {
+                fetchTodos();
+                setModalToggle(false);
+                setTask('')
+                setPrecentage('')
+            })
+            .catch(error => {
+                console.log(error, 'ERROR')
+            })
+        }
     }
 
     const fetchTodos = () => {
@@ -140,15 +171,17 @@ const Board = () => {
                                         <Items 
                                             key={itemIndex} 
                                             item={item} 
+                                            itemIndex={itemIndex}
                                             todoIndex={todoIndex}
                                             todosList={todosList}
+                                            handleActionModalToggle={handleActionModalToggle}
                                         />
                                     )
                                 })
                             ) : (
-                                <Items />
+                                <Items item={[]} />
                             )}
-                            <ActionItem onClick={() => handleAddModalToggle(todo.id)}>
+                            <ActionItem onClick={() => handleActionModalToggle(todo.id, 'add')}>
                                 <FontAwesomeIcon icon={faCirclePlus}/>
                                 <span>New Task</span>
                             </ActionItem>
@@ -156,29 +189,17 @@ const Board = () => {
                     )
                 })}
 
-                <Modal
-                    title="Create Task"
-                    centered
-                    open={addModalToggle}
-                    onCancel={() => setAddModalToggle(false)}
-                    footer={[
-                        <Button key="back" onClick={() => setAddModalToggle(false)}>
-                          Cancel
-                        </Button>,
-                        <Button key="submit" loading={isLoading} onClick={addNewTask}>
-                          Save Task
-                        </Button>
-                      ]}
-                >
-                    <div className="my-2">
-                        <label>Task Name :</label>
-                        <Input placeholder="Task Name" value={newTask} onChange={(e) => setNewTask(e.target.value)} />
-                    </div>
-                    <div className="my-2">
-                        <label>Progress :</label>
-                        <Input placeholder="Task Name" value={newPrecentage} onChange={(e) => setNewPrecentage(e.target.value)} />
-                    </div>
-                </Modal>
+                <ActionModal
+                    mode={modalMode}
+                    todoId={activeTodoId}
+                    taskName={taskName}
+                    taskPrecentage={taskPrecentage}
+                    setTask={setTask}
+                    setPrecentage={setPrecentage}
+                    submitTask={submitTask}
+                    modalToggle={modalToggle}
+                    setModalToggle={setModalToggle}
+                />
             </div>
         )
     }

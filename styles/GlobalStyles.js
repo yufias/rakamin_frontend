@@ -3,7 +3,6 @@ import styled from "styled-components";
 export const ActionContainer = styled.div`
     display: inline-block;
     position: relative;
-    z-index: 9999;
 `;
 
 export const ActionDropdown = styled.div`
@@ -16,6 +15,7 @@ export const ActionDropdown = styled.div`
     padding: 8px;
     font-size: 12px;
     width: 200px;
+    z-index: 9999;
 `;
 
 export const ActionItem = styled.p`
